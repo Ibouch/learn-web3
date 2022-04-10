@@ -2,43 +2,132 @@
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
-  <title>Home</title>
+    <title>Home</title>
+
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        div {
+            width: 20%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        button {
+            width: 100%;
+            margin: 10px 0px 5px 0px;
+        }
+    </style>
+
 </head>
 
 <body>
 
-  <body>
-    <h1>This is my dApp! Hi Mouhcine</h1>
-    <p>Here we can set or get the mood:</p>
-    <label for="mood">Input Mood:</label> <br />
-    <input type="text" id="mood" />
-    <div>
-      <button onclick="getMood()">get Mood</button>
-    </div>
-    <div>
-      <button onclick="setMood()">set Mood</button>
-    </div>
-  </body>
+    <body>
+        <h1>This is my dApp! Hi Mouhcine</h1>
+        <p>Here we can set or get the mood:</p>
+        <label for="mood">Input Mood:</label> <br />
+        <input type="text" id="mood" />
+        <div>
+            <button onclick="getMood()">get Mood</button>
+        </div>
+        <div>
+            <button onclick="setMood()">set Mood</button>
+        </div>
+    </body>
 
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-    crossorigin="anonymous"></script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>
+
+<!-- EtherJS -->
+<script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+
+<script>
+    const MoodContractAddress = "0xd5229a7AA22A1F422253f2B912A1A5c6d80442E4";
+    const MoodContractABI = [
+        {
+            "type": "function",
+            "name": "setMood",
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "_mood",
+                    "type": "string"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "nonpayable",
+        },
+        {
+            "type": "function",
+            "name": "getMood",
+            "inputs": [],
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "stateMutability": "view",
+        }
+    ]
+
+    // Define an ethers provider. In our case it is Ropsten
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "ropsten");
+
+    /*
+    ** Request access to the user's wallet and connect the signer to the metamask account (we use [0] as the default),
+    ** and define the contract object using your contract address, ABI, and signer.
+    */
+    let MoodContract;
+    let signer;
+    provider.send("eth_requestAccounts", []).then(() => {
+        provider.listAccounts().then((accounts) => {
+            signer = provider.getSigner(accounts[0]);
+            MoodContract = new ethers.Contract(
+                MoodContractAddress,
+                MoodContractABI,
+                signer
+            );
+        });
+    });
+
+    // Asynchronous functions to call the smart contract functions
+    async function getMood() {
+        const getMoodPromise = MoodContract.getMood();
+        const Mood = await getMoodPromise;
+        console.log(Mood);
+    }
+
+    async function setMood() {
+        const mood = document.getElementById("mood").value;
+        const setMoodPromise = MoodContract.setMood(mood);
+        await setMoodPromise;
+    }
+
+</script>
